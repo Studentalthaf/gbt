@@ -13,7 +13,7 @@ export default function BirthdayGreeting() {
   const [showWaiting, setShowWaiting] = useState(false);
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
-  const audioRef = useRef(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const messages = [
     "ANJAYYYY ULTAH NIH INEM 🤣🤣🤣🤣",
