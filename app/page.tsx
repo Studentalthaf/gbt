@@ -1,103 +1,232 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+// app/page.tsx (untuk App Router)
+import { useState, useEffect, useRef } from 'react';
+import styles from './styles/Birthday.module.css';
+
+export default function BirthdayGreeting() {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [userName, setUserName] = useState('');
+  const [showNameInput, setShowNameInput] = useState(false);
+  const [loveClicks, setLoveClicks] = useState([false, false, false, false]);
+  const [showMessages, setShowMessages] = useState(false);
+  const [showWaiting, setShowWaiting] = useState(false);
+  const [audioPlaying, setAudioPlaying] = useState(false);
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const audioRef = useRef(null);
+
+  const messages = [
+    "ANJAYYYY ULTAH NIH INEM 🤣🤣🤣🤣",
+    "Happy Birthday,",
+    "Meskipun gatau namamu siapa pokok inem yang kutahu nama e😭😭",
+    "Semoga yang disemogakan terkabul oke",
+    "Sehat selalu ya!",
+    "Semoga ga salah cowo lagi",
+    "Oh iya, semoga di hari spesialmu ini kamu dapat menjadi pribadi yang lebih baik lagi yaa.. 🥳🥳🥳🥳",
+    "Happy Level Up Day Inem!! 🥳"
+  ];
+
+  useEffect(() => {
+    if (showMessages) {
+      // Tampilkan "Tunggu..." selama 3 detik
+      setShowWaiting(true);
+      const waitingTimer = setTimeout(() => {
+        setShowWaiting(false);
+        setCurrentMessageIndex(0); // Mulai dari pesan pertama
+      }, 3000);
+      return () => clearTimeout(waitingTimer);
+    }
+  }, [showMessages]);
+
+  const handleNextMessage = () => {
+    if (currentMessageIndex < messages.length - 1) {
+      setCurrentMessageIndex(prev => prev + 1);
+    }
+  };
+
+  const createFallingHeart = () => {
+    const heart = document.createElement('div');
+    heart.className = styles.fallingHeart;
+    heart.innerHTML = '❄️';
+    heart.style.left = Math.random() * 100 + 'vw';
+    heart.style.animationDuration = (Math.random() * 3) + 2 + 's';
+    document.body.appendChild(heart);
+
+    // Remove heart after animation
+    setTimeout(() => {
+      if (heart.parentNode) {
+        heart.parentNode.removeChild(heart);
+      }
+    }, 5000);
+  };
+
+  const handleGiftClick = () => {
+    if (currentStep === 0) {
+      setCurrentStep(1);
+      setShowNameInput(true);
+      if (audioRef.current) {
+        audioRef.current.play();
+        setAudioPlaying(true);
+      }
+    }
+  };
+
+  const handleNameSubmit = (e) => {
+    e.preventDefault();
+    if (userName.trim() && userName.length <= 10) {
+      setShowNameInput(false);
+      setCurrentStep(2);
+      setTimeout(() => setCurrentStep(3), 1000);
+    } else {
+      alert('Nama tidak boleh kosong atau lebih dari 10 karakter!');
+    }
+  };
+
+  const handleLoveClick = (index) => {
+    const newLoveClicks = [...loveClicks];
+    newLoveClicks[index] = true;
+    setLoveClicks(newLoveClicks);
+
+    if (newLoveClicks.every(click => click)) {
+      setCurrentMessageIndex(-1); // Reset ke -1 agar mulai dari "Tunggu..."
+      setTimeout(() => {
+        setCurrentStep(4);
+        setShowMessages(true);
+      }, 500);
+    }
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <>
+      {/* Metadata akan dihandle di layout.tsx untuk App Router */}
+      <div className={styles.container}>
+        {/* Background */}
+        <div className={styles.background}>
+          <img 
+            src="https://raw.githubusercontent.com/Studentalthaf/gabut/main/a2.jpeg" 
+            alt="Background"
+            className={styles.wallpaper}
+          />
+          <div className={styles.blur}></div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        {/* Audio */}
+        <audio 
+          ref={audioRef}
+          src="/music/hahah.mp3"
+          loop
+        />
+
+        {/* Content */}
+        <div className={styles.content}>
+          {/* Initial Gift Box */}
+          {currentStep === 0 && (
+            <div className={styles.giftSection}>
+              <div className={styles.giftBox} onClick={handleGiftClick}>
+                <img 
+                  src="https://feeldreams.github.io/kadoin.png" 
+                  alt="Gift Box"
+                  className={styles.giftImage}
+                />
+              </div>
+              <p className={styles.instruction}>Klik Kadonya!</p>
+            </div>
+          )}
+
+          {/* Name Input */}
+          {showNameInput && (
+            <div className={styles.nameInputSection}>
+              <h2>Masukin Nama Kamu Inem</h2>
+              <form onSubmit={handleNameSubmit}>
+                <input
+                  type="text"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  placeholder="Nama kamu..."
+                  className={styles.nameInput}
+                  maxLength={10}
+                />
+                <button type="submit" className={styles.submitBtn}>
+                  OK
+                </button>
+              </form>
+            </div>
+          )}
+
+          {/* Greeting */}
+          {currentStep >= 2 && (
+            <div className={styles.greetingSection}>
+              <h1 className={styles.greeting}>Hai, {userName} ✨</h1>
+            </div>
+          )}
+
+          {/* Stickers */}
+          {currentStep >= 2 && (
+            <div className={styles.stickers}>
+              <img src="https://feeldreams.github.io/bunga.gif" className={styles.sticker} />
+              <img src="https://feeldreams.github.io/pusn.gif" className={styles.sticker} />
+              <img src="https://feeldreams.github.io/pandacoklat.gif" className={styles.sticker} />
+              <img src="https://feeldreams.github.io/cilukba.gif" className={styles.sticker} />
+              <img src="https://feeldreams.github.io/pandakuning.gif" className={styles.sticker} />
+              <img src="https://feeldreams.github.io/emawh.gif" className={styles.sticker} />
+            </div>
+          )}
+
+          {/* Message Box */}
+          {currentStep >= 3 && (
+            <div className={styles.messageBox}>
+              <p className={styles.message}>Aku Ada Sesuatu Nih Nem 🤣🤣🤣🤣</p>
+              
+              {!showMessages && (
+                <>
+                  <p className={styles.instruction}>KLIK 4 KUCING INI DULU 😺😺😺😺</p>
+                  <div className={styles.loveRow}>
+                    {loveClicks.map((clicked, index) => (
+                      <button
+                        key={index}
+                        className={styles.loveButton}
+                        onClick={() => handleLoveClick(index)}
+                        disabled={clicked}
+                      >
+                        {clicked ? '😺' : '😺 '}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {showMessages && (
+                <div className={styles.birthdayMessages}>
+                  {showWaiting ? (
+                    <p className={styles.message}>Tunggu...</p>
+                  ) : (
+                    <>
+                      {messages.slice(0, currentMessageIndex + 1).map((message, index) => (
+                        <p 
+                          key={index} 
+                          className={`${styles.message} ${index === currentMessageIndex ? styles.newMessage : ''} ${
+                            index >= 2 && index <= 6 ? styles.specialMessage : ''
+                          }`}
+                        >
+                          {message}
+                        </p>
+                      ))}
+                      {currentMessageIndex < messages.length - 1 && (
+                        <button 
+                          onClick={handleNextMessage}
+                          className={styles.nextButton}
+                        >
+                          😺 Klik untuk lanjut
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </>
   );
 }
