@@ -1,7 +1,7 @@
 'use client';
 
 // app/page.tsx (untuk App Router)
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, FormEvent } from 'react';
 import styles from './styles/Birthday.module.css';
 
 export default function BirthdayGreeting() {
@@ -71,7 +71,7 @@ export default function BirthdayGreeting() {
     }
   };
 
-  const handleNameSubmit = (e) => {
+  const handleNameSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (userName.trim() && userName.length <= 10) {
       setShowNameInput(false);
@@ -82,7 +82,7 @@ export default function BirthdayGreeting() {
     }
   };
 
-  const handleLoveClick = (index) => {
+  const handleLoveClick = (index: number) => {
     const newLoveClicks = [...loveClicks];
     newLoveClicks[index] = true;
     setLoveClicks(newLoveClicks);
